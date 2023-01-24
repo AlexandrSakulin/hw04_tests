@@ -1,4 +1,6 @@
 # Byte-compiled / optimized / DLL files
+yatube/static
+yatube/htmlcov
 __pycache__/
 *.py[cod]
 *$py.class
