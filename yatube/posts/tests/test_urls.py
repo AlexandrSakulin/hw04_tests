@@ -33,53 +33,62 @@ class PostsURLTests(TestCase):
         self.non_author_client = Client()
         self.non_author_client.force_login(self.non_author)
 
-    def test_posts_available_guest_client(self):
-        """Общедоступные страницы доступны любому пользователю"""
-        for address, template in self.template_url_names.items():
-            with self.subTest(template=template):
-                response = self.client.get(address)
+
+    def test_urls(self):
+        """URL-адрес использует соответствующий шаблон."""
+        templates_url_names = {
+            '/': 'posts/index.html',
+            f'/group/{self.group.slug}/': 'posts/group_list.html',
+            f'/profile/{self.user.username}/': 'posts/profile.html',
+            f'/posts/{self.post.id}/': 'posts/post_detail.html',
+            '/create/': 'posts/create_post.html',
+            f'/posts/{self.post.id}/edit/': 'posts/create_post.html',
+        }
+        for url, template, in templates_url_names.items():
+            with self.subTest(url=url):
+                response = self.authorized_client.get(url)
+                self.assertTemplateUsed(response, template)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_urls_uses_correct_template(self):
-        """URL-адрес использует соответствующий шаблон."""
-        for address, template in self.template_url_names.items():
-            with self.subTest(template=template):
-                response = self.authorized_client.get(address)
-                self.assertTemplateUsed(response, template)
+    def test_urls_for_guest(self):
+        """Страницы главная, группы, профиль и детальная информация о посте
+         доступны неавторизованному клиенту"""
+        url_names = {
+            '/',
+            f'/group/{self.group.slug}/',
+            f'/profile/{self.user.username}/',
+            f'/posts/{self.post.id}/',
+        }
+        for url in url_names:
+            with self.subTest():
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.OK)
 
-    def test_posts_create_url_available_authorized_user(self):
-        """Страница /create/ доступна авторизованному пользователю
-        и использует соответствующий шаблон.
-        """
-        response = self.authorized_client.get('/create/')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
-        self.assertTemplateUsed(response, 'posts/create_post.html')
+    def test_create_and_post_edit_for_authorized(self):
+        """Страницы create и post_edit недоступны неавторизованному клиенту"""
+        url_names = {
+            '/create/',
+            f'/posts/{self.post.id}/edit/',
+        }
+        for url in url_names:
+            with self.subTest():
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, HTTPStatus.FOUND)
 
-    def test_posts_edit_url_available_author(self):
-        """Страница /posts/<int:post_id>/edit/ доступна автору."""
-        response = self.author_client.get(f'/posts/{self.post.id}/edit/')
-        self.assertEqual(response.status_code, HTTPStatus.OK)
+    def test_create_url_redirect_guest(self):
+        """Страница /create/ перенаправляет неавторизованного клиента
+        на страницу авторизации."""
+        response = self.client.get('/create/')
+        self.assertRedirects(response, '/auth/login/?next=/create/')
 
-    def test_posts_create_url_redirect_anonymous_on_login(self):
-        """Страница по адресу /create/ перенаправит анонимного
-        пользователя на страницу логина.
-        """
-        response = self.client.get('/create/', )
+    def test_post_edit_url_redirect_guest(self):
+        """Страница posts/post_id/edit/ перенаправляет
+         неавторизованного клиента на страницу авторизации."""
+        response = self.client.get(f'/posts/{self.post.id}/edit/')
         self.assertRedirects(
-            response, '/auth/login/?next=/create/'
-        )
+            response, f'/auth/login/?next=/posts/{self.post.id}/edit/')
 
-    def test_posts_edit_url_redirect_anonymous_on_login(self):
-        """Страница по адресу /posts/<int:post_id>/edit/ перенаправит
-        анонимного пользователя на страницу логина."""
-
-        response = self.client.get(
-            f'/posts/{self.post.id}/edit/', )
-        self.assertRedirects(
-            response, f'/auth/login/?next=/posts/{self.post.id}/edit/'
-        )
-
-    def test_404_page(self):
-        """Запрос к несуществующей странице вернёт ошибку 404"""
-        response = self.client.get('/unknown_page/')
+    def test_wrong_uri_returns_404(self):
+        """Запрос к несуществующей странице вернёт ошибку 404."""
+        response = self.client.get('/unexisting_page/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
