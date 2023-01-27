@@ -33,7 +33,6 @@ class PostsURLTests(TestCase):
         self.non_author_client = Client()
         self.non_author_client.force_login(self.non_author)
 
-
     def test_urls(self):
         """URL-адрес использует соответствующий шаблон."""
         templates_url_names = {
