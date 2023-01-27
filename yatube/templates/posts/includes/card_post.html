@@ -1,7 +1,7 @@
 <article>
   <ul>
     <li>
-      {% if flag_profile is not True %}
+      {% if not flag_profile  %}
         <a href="{% url 'posts:profile' post.author.username %}" >Автор: {{ post.author.get_full_name }}</a>
       {% else %}
         Автор: {{ post.author.get_full_name }}
@@ -14,7 +14,7 @@
   <p>{{ post.text|linebreaksbr }}</p>
   <a href="{% url 'posts:post_detail' post.pk %}">подробная информация </a> <br>
 </article>
-{% if flag_group is not True %}
+{% if not flag_profile  %}
   {% if post.group  %}
     <a href="{% url 'posts:group_list' post.group.slug %}">все записи группы</a>
   {% else %}

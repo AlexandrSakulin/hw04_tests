@@ -15,8 +15,8 @@
               </div>
               <div class="card-body">
                  {% include 'includes/errors.html' %}
-                 {% if is_edit %}
-                   <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_edit' post_id %}">
+                 {% if form.instance.pk %}
+                   <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_edit' form.instance.pk %}">
                  {% else %}
                    <form method="post" enctype="multipart/form-data" action="{% url 'posts:post_create'%}">
                  {% endif %}

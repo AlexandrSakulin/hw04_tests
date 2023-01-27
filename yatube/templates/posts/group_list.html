@@ -10,6 +10,8 @@
 
     {% for post in posts %}
       {% include 'posts/includes/card_post.html' with flag_group=True %}
+      {% if not forloop.last %}<hr>{% endif %}
     {% endfor %}
+    {% include 'posts/includes/paginator.html' %}
   </div>
 {% endblock %}}

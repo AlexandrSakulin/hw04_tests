@@ -7,7 +7,7 @@ User = get_user_model()
 
 class Group(models.Model):
     title = models.CharField(
-        verbose_name='Название группы',
+        verbose_name='Группа',
         help_text='Выберите группу для поста',
         max_length=200
     )
@@ -16,7 +16,8 @@ class Group(models.Model):
         unique=True
     )
     description = models.TextField(
-        verbose_name='Описание группы'
+        verbose_name='Описание группы',
+        help_text='Введите описание группы'
     )
 
     class Meta:
@@ -29,7 +30,8 @@ class Group(models.Model):
 
 class Post(models.Model):
     text = models.TextField(
-        verbose_name='Пост'
+        verbose_name='Пост',
+        help_text='Введите текст поста',
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата',
@@ -47,7 +49,8 @@ class Post(models.Model):
         null=True,
         on_delete=models.SET_NULL,
         related_name='posts',
-        verbose_name='Группа'
+        verbose_name='Группа',
+        help_text='Выберите группу',
     )
 
     class Meta:
