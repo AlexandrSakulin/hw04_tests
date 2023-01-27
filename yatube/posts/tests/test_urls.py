@@ -37,7 +37,7 @@ class PostsURLTests(TestCase):
         """Общедоступные страницы доступны любому пользователю"""
         for address, template in self.template_url_names.items():
             with self.subTest(template=template):
-                response = self.guest_client.get(address)
+                response = self.client.get(address)
                 self.assertEqual(response.status_code, HTTPStatus.OK)
 
     def test_urls_uses_correct_template(self):
@@ -64,7 +64,7 @@ class PostsURLTests(TestCase):
         """Страница по адресу /create/ перенаправит анонимного
         пользователя на страницу логина.
         """
-        response = self.guest_client.get('/create/', )
+        response = self.client.get('/create/', )
         self.assertRedirects(
             response, '/auth/login/?next=/create/'
         )
@@ -73,7 +73,7 @@ class PostsURLTests(TestCase):
         """Страница по адресу /posts/<int:post_id>/edit/ перенаправит
         анонимного пользователя на страницу логина."""
 
-        response = self.guest_client.get(
+        response = self.client.get(
             f'/posts/{self.post.id}/edit/', )
         self.assertRedirects(
             response, f'/auth/login/?next=/posts/{self.post.id}/edit/'
@@ -81,5 +81,5 @@ class PostsURLTests(TestCase):
 
     def test_404_page(self):
         """Запрос к несуществующей странице вернёт ошибку 404"""
-        response = self.guest_client.get('/unknown_page/')
+        response = self.client.get('/unknown_page/')
         self.assertEqual(response.status_code, HTTPStatus.NOT_FOUND)
