@@ -61,13 +61,14 @@ class PostsURLTests(TestCase):
                 response = self.authorized_client.get(
                     reverse(address, args=args)
                 )
-                if address != 'posts:post_edit':
-                    self.assertEqual(response.status_code, HTTPStatus.OK)
-                else:
+                if address == 'posts:post_edit':
                     rev_detail = reverse(
                         'posts:post_detail', args=(self.post.id,)
                     )
                     self.assertRedirects(response, rev_detail)
+                else:
+                    self.assertEqual(response.status_code, HTTPStatus.OK)
+
 
     def test_author_access(self):
         """Доступность для автора."""

@@ -159,7 +159,7 @@ class PaginatorViewTest(TestCase):
         )
         pages_units = (
             ('?page=1', settings.POSTS_IN_PAGE),
-            ('?page=2', int(settings.THIRTEEN) - int(settings.POSTS_IN_PAGE))
+            ('?page=2', settings.THIRTEEN - settings.POSTS_IN_PAGE)
         )
 
         for address, args in paginator_urls:
@@ -169,4 +169,4 @@ class PaginatorViewTest(TestCase):
                         response = self.authorized_client.get(
                             reverse(address, args=args) + page
                         )
-        self.assertEqual(len(response.context['page_obj']), units)
+                        self.assertEqual(len(response.context['page_obj']), units)
