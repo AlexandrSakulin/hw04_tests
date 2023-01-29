@@ -69,7 +69,6 @@ class PostsURLTests(TestCase):
                 else:
                     self.assertEqual(response.status_code, HTTPStatus.OK)
 
-
     def test_author_access(self):
         """Доступность для автора."""
         for address, args in self.urls_template:
